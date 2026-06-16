@@ -30,6 +30,17 @@ always @(*) begin
                   instruction[31:25],
                   instruction[11:7]};
         end
+        // B-Type : BEQ
+        7'b1100011:
+        begin
+            immediate =
+                {{19{instruction[31]}},
+                  instruction[31],
+                  instruction[7],
+                  instruction[30:25],
+                  instruction[11:8],
+                  1'b0};
+        end
 
         default:
             immediate = 32'b0;

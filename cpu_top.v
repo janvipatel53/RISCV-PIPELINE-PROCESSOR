@@ -5,6 +5,9 @@ module cpu_top(
 
 wire [31:0] pc_out;
 wire [31:0] next_pc;
+wire [31:0] branch_target;
+
+wire branch_taken;
 
 wire [31:0] instruction;
 
@@ -39,16 +42,18 @@ wire zero;
 wire [31:0] memory_data;
 wire [31:0] write_back_data;
 
-// normal execution : PC = PC + 4
-assign next_pc = pc_out + 32'd4;
+assign branch_target =pc_out + immediate;
+
+assign branch_taken = branch & zero;
+
+assign next_pc =
+       (branch_taken) ?branch_target :(pc_out + 32'd4);
 
 // select second ALU operand
-assign alu_input_b =
-    (alu_src) ? immediate : read_data2;
+assign alu_input_b =(alu_src) ? immediate : read_data2;
 
 // select data to write back
-assign write_back_data =
-    (mem_to_reg) ? memory_data : alu_result;
+assign write_back_data = (mem_to_reg) ? memory_data : alu_result;
 
 
 // Program Counter
