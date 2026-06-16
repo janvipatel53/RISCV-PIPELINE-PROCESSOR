@@ -6,17 +6,23 @@ module instruction_memory(
 );
 
     reg [31:0] memory [0:255];
-
-  initial begin
+    
+initial begin
 
     // ADDI x1,x0,10
     memory[0] = 32'h00A00093;
 
-    // SW x1,0(x0)
-    memory[1] = 32'h00102023;
+    // ADDI x2,x0,10
+    memory[1] = 32'h00A00113;
 
-    // LW x4,0(x0)
-    memory[2] = 32'h00002203;
+    // BEQ x1,x2,+8
+    memory[2] = 32'h00208463;
+
+    // ADDI x3,x0,99
+    memory[3] = 32'h06300193;
+
+    // ADDI x4,x0,55
+    memory[4] = 32'h03700213;
 
 end
     always @(*) begin

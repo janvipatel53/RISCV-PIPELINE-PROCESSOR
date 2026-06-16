@@ -36,13 +36,12 @@ end
 initial begin
 
     $monitor(
-        "Time=%0t PC=%h x1=%d x4=%d MEM0=%d",
+        "Time=%0t PC=%h IFID_INSTR=%h",
         $time,
         dut.pc_out,
-        dut.rf.registers[1],
-        dut.rf.registers[4],
-        dut.dmem.memory[0]
+        dut.if_id_instruction
     );
 
 end
+
 endmodule

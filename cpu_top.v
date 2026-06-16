@@ -10,6 +10,8 @@ wire [31:0] branch_target;
 wire branch_taken;
 
 wire [31:0] instruction;
+wire [31:0] if_id_pc;
+wire [31:0] if_id_instruction;
 
 wire [6:0] opcode;
 wire [4:0] rd;
@@ -70,9 +72,22 @@ instruction_memory imem(
     .instruction(instruction)
 );
 
+if_id if_id_reg(
+
+    .clk(clk),
+    .reset(reset),
+
+    .pc_in(pc_out),
+    .instruction_in(instruction),
+
+    .pc_out(if_id_pc),
+    .instruction_out(if_id_instruction)
+
+);
+
 // Decode instruction fields
 instruction_decoder decoder(
-    .instruction(instruction),
+    .instruction(if_id_instruction),
     .opcode(opcode),
     .rd(rd),
     .funct3(funct3),
