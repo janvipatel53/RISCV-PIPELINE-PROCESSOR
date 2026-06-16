@@ -1,0 +1,13 @@
+# simulation outputs
+*.vcd
+
+# compiled binaries
+*.out
+*.sim
+cpu_sim
+
+# vscode settings
+.vscode/
+
+# temporary files
+*.tmp
