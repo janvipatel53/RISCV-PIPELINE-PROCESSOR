@@ -36,10 +36,11 @@ end
 initial begin
 
     $monitor(
-        "Time=%0t PC=%h IFID_INSTR=%h",
+        "Time=%0t RD1=%d IMM=%d RD=%d",
         $time,
-        dut.pc_out,
-        dut.if_id_instruction
+        dut.id_ex_read_data1,
+        dut.id_ex_immediate,
+        dut.id_ex_rd
     );
 
 end

@@ -44,6 +44,27 @@ wire zero;
 wire [31:0] memory_data;
 wire [31:0] write_back_data;
 
+wire [31:0] id_ex_pc;
+wire [31:0] id_ex_read_data1;
+wire [31:0] id_ex_read_data2;
+wire [31:0] id_ex_immediate;
+
+wire [4:0] id_ex_rd;
+wire [4:0] id_ex_rs1;
+wire [4:0] id_ex_rs2;
+
+wire [2:0] id_ex_funct3;
+wire [6:0] id_ex_funct7;
+
+wire id_ex_reg_write;
+wire id_ex_mem_read;
+wire id_ex_mem_write;
+wire id_ex_alu_src;
+wire id_ex_branch;
+wire id_ex_mem_to_reg;
+
+wire [2:0] id_ex_alu_op;
+
 assign branch_target =pc_out + immediate;
 
 assign branch_taken = branch & zero;
@@ -132,6 +153,58 @@ alu_control alu_ctrl(
     .funct3(funct3),
     .funct7(funct7),
     .alu_sel(alu_sel)
+);
+id_ex id_ex_reg(
+
+    .clk(clk),
+    .reset(reset),
+
+    .pc_in(if_id_pc),
+
+    .read_data1_in(read_data1),
+    .read_data2_in(read_data2),
+
+    .immediate_in(immediate),
+
+    .rd_in(rd),
+    .rs1_in(rs1),
+    .rs2_in(rs2),
+
+    .funct3_in(funct3),
+    .funct7_in(funct7),
+
+    .reg_write_in(reg_write),
+    .mem_read_in(mem_read),
+    .mem_write_in(mem_write),
+    .alu_src_in(alu_src),
+    .branch_in(branch),
+    .mem_to_reg_in(mem_to_reg),
+
+    .alu_op_in(alu_op),
+
+    .pc_out(id_ex_pc),
+
+    .read_data1_out(id_ex_read_data1),
+    .read_data2_out(id_ex_read_data2),
+
+    .immediate_out(id_ex_immediate),
+
+    .rd_out(id_ex_rd),
+    .rs1_out(id_ex_rs1),
+    .rs2_out(id_ex_rs2),
+
+    .funct3_out(id_ex_funct3),
+    .funct7_out(id_ex_funct7),
+
+    .reg_write_out(id_ex_reg_write),
+    .mem_read_out(id_ex_mem_read),
+    .mem_write_out(id_ex_mem_write),
+    .alu_src_out(id_ex_alu_src),
+    .branch_out(id_ex_branch),
+    .mem_to_reg_out(id_ex_mem_to_reg),
+
+    .alu_op_out(id_ex_alu_op)
+
 );
 
 // Execute stage
