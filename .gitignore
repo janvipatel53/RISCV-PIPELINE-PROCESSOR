@@ -4,6 +4,7 @@
 # compiled binaries
 *.out
 *.sim
+*_sim
 cpu_sim
 
 # vscode settings
