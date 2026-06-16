@@ -7,18 +7,18 @@ module instruction_memory(
 
     reg [31:0] memory [0:255];
 
-   initial begin
+  initial begin
 
-    // x1 = 10
+    // ADDI x1,x0,10
     memory[0] = 32'h00A00093;
 
-    // x2 = 20
-    memory[1] = 32'h01400113;
+    // SW x1,0(x0)
+    memory[1] = 32'h00102023;
 
-    // x3 = x1 + x2
-    memory[2] = 32'h002081B3;
+    // LW x4,0(x0)
+    memory[2] = 32'h00002203;
 
-    end
+end
     always @(*) begin
         instruction = memory[address[31:2]];
     end
