@@ -36,11 +36,11 @@ end
 initial begin
 
     $monitor(
-        "Time=%0t RD1=%d IMM=%d RD=%d",
+        "Time=%0t ALU=%d EXMEM=%d RD=%d",
         $time,
-        dut.id_ex_read_data1,
-        dut.id_ex_immediate,
-        dut.id_ex_rd
+        dut.alu_result,
+        dut.ex_mem_alu_result,
+        dut.ex_mem_rd
     );
 
 end

@@ -65,6 +65,17 @@ wire id_ex_mem_to_reg;
 
 wire [2:0] id_ex_alu_op;
 
+wire [31:0] ex_mem_alu_result;
+wire [31:0] ex_mem_read_data2;
+
+wire [4:0] ex_mem_rd;
+
+wire ex_mem_reg_write;
+wire ex_mem_mem_read;
+wire ex_mem_mem_write;
+wire ex_mem_mem_to_reg;
+wire ex_mem_branch;
+
 assign branch_target =pc_out + immediate;
 
 assign branch_taken = branch & zero;
@@ -215,6 +226,35 @@ alu alu_inst(
     .Y(alu_result),
     .carry(carry),
     .zero(zero)
+);
+
+ex_mem ex_mem_reg(
+
+    .clk(clk),
+    .reset(reset),
+
+    .alu_result_in(alu_result),
+    .read_data2_in(id_ex_read_data2),
+
+    .rd_in(id_ex_rd),
+
+    .reg_write_in(id_ex_reg_write),
+    .mem_read_in(id_ex_mem_read),
+    .mem_write_in(id_ex_mem_write),
+    .mem_to_reg_in(id_ex_mem_to_reg),
+    .branch_in(id_ex_branch),
+
+    .alu_result_out(ex_mem_alu_result),
+    .read_data2_out(ex_mem_read_data2),
+
+    .rd_out(ex_mem_rd),
+
+    .reg_write_out(ex_mem_reg_write),
+    .mem_read_out(ex_mem_mem_read),
+    .mem_write_out(ex_mem_mem_write),
+    .mem_to_reg_out(ex_mem_mem_to_reg),
+    .branch_out(ex_mem_branch)
+
 );
 
 // Data memory
