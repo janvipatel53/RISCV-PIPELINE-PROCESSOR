@@ -35,6 +35,14 @@ wire [31:0] read_data2;
 
 wire [31:0] immediate;
 
+wire stall_reg_write;
+wire stall_mem_read;
+wire stall_mem_write;
+wire stall_branch;
+wire stall_mem_to_reg;
+wire stall_alu_src;
+wire [2:0] stall_alu_op;
+
 wire [31:0] id_ex_alu_input_b;
 wire [31:0] alu_result;
 
@@ -90,12 +98,37 @@ wire [1:0] forward_b;
 wire [31:0] alu_input_a;
 wire [31:0] alu_input_b_forwarded;
 
+wire pc_write;
+wire if_id_write;
+wire control_mux;
+
 assign branch_target =pc_out + immediate;
 
 assign branch_taken = branch & zero;
 
 assign next_pc =
        (branch_taken) ?branch_target :(pc_out + 32'd4);
+
+assign stall_reg_write =
+       control_mux ? 1'b0 : reg_write;
+
+assign stall_mem_read =
+       control_mux ? 1'b0 : mem_read;
+
+assign stall_mem_write =
+       control_mux ? 1'b0 : mem_write;
+
+assign stall_branch =
+       control_mux ? 1'b0 : branch;
+
+assign stall_mem_to_reg =
+       control_mux ? 1'b0 : mem_to_reg;
+
+assign stall_alu_src =
+       control_mux ? 1'b0 : alu_src;
+
+assign stall_alu_op =
+       control_mux ? 3'b000 : alu_op;
 
 // select second ALU operand
 assign id_ex_alu_input_b =(id_ex_alu_src) ? id_ex_immediate :   alu_input_b_forwarded;
@@ -112,6 +145,7 @@ assign alu_input_b_forwarded =(forward_b == 2'b10) ? ex_mem_alu_result :(forward
 pc pc_inst(
     .clk(clk),
     .reset(reset),
+    .pc_write(pc_write),
     .next_pc(next_pc),
     .pc_out(pc_out)
 );
@@ -126,6 +160,8 @@ if_id if_id_reg(
 
     .clk(clk),
     .reset(reset),
+
+    .if_id_write(if_id_write),
 
     .pc_in(pc_out),
     .instruction_in(instruction),
@@ -203,14 +239,13 @@ id_ex id_ex_reg(
     .funct3_in(funct3),
     .funct7_in(funct7),
 
-    .reg_write_in(reg_write),
-    .mem_read_in(mem_read),
-    .mem_write_in(mem_write),
-    .alu_src_in(alu_src),
-    .branch_in(branch),
-    .mem_to_reg_in(mem_to_reg),
-
-    .alu_op_in(alu_op),
+    .reg_write_in(stall_reg_write),
+    .mem_read_in(stall_mem_read),
+    .mem_write_in(stall_mem_write),
+    .alu_src_in(stall_alu_src),
+    .branch_in(stall_branch),
+    .mem_to_reg_in(stall_mem_to_reg),
+    .alu_op_in(stall_alu_op),
 
     .pc_out(id_ex_pc),
 
@@ -322,6 +357,21 @@ forwarding_unit fu(
 
     .forward_a(forward_a),
     .forward_b(forward_b)
+
+);
+//hazard detection
+hazard_detection hdu(
+
+    .id_ex_mem_read(id_ex_mem_read),
+
+    .id_ex_rd(id_ex_rd),
+
+    .if_id_rs1(rs1),
+    .if_id_rs2(rs2),
+
+    .pc_write(pc_write),
+    .if_id_write(if_id_write),
+    .control_mux(control_mux)
 
 );
 

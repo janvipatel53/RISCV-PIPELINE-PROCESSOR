@@ -9,14 +9,11 @@ module instruction_memory(
     
 initial begin
 
-    // ADDI x1,x0,10
-    memory[0] = 32'h00A00093;
+    // LW x1,0(x0)
+    memory[0] = 32'h00002083;
 
-    // ADDI x2,x1,5
-    memory[1] = 32'h00508113;
-
-    // ADDI x3,x2,5
-    memory[2] = 32'h00510193;
+    // ADD x2,x1,x1
+    memory[1] = 32'h00108133;
 
 end
     always @(*) begin

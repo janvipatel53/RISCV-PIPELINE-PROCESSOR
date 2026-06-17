@@ -30,5 +30,8 @@ module data_memory(
             memory[address[31:2]] <= write_data;
 
     end
+    initial begin
+    memory[0] = 10;
+end
 
 endmodule

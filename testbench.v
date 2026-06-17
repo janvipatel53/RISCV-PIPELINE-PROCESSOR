@@ -36,11 +36,13 @@ end
 initial begin
 
     $monitor(
-        "Time=%0t x1=%d x2=%d x3=%d",
+        "Time=%0t PC=%h x1=%d x2=%d pc_write=%b if_id_write=%b",
         $time,
+        dut.pc_out,
         dut.rf.registers[1],
         dut.rf.registers[2],
-        dut.rf.registers[3]
+        dut.pc_write,
+        dut.if_id_write
     );
 
 end

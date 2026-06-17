@@ -4,6 +4,7 @@ module if_id(
     input reset,    
     input [31:0] pc_in,
     input [31:0] instruction_in,
+    input if_id_write,
     output reg [31:0] pc_out,
     output reg [31:0] instruction_out
 
@@ -18,11 +19,9 @@ always @(posedge clk) begin
 
     end
 
-    else begin
-
-        pc_out <= pc_in;
-        instruction_out <= instruction_in;
-
+    else if(if_id_write) begin
+    pc_out <= pc_in;
+    instruction_out <= instruction_in;
     end
 
 end
