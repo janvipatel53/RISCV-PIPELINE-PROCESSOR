@@ -35,7 +35,7 @@ wire [31:0] read_data2;
 
 wire [31:0] immediate;
 
-wire [31:0] alu_input_b;
+wire [31:0] id_ex_alu_input_b;
 wire [31:0] alu_result;
 
 wire carry;
@@ -76,6 +76,14 @@ wire ex_mem_mem_write;
 wire ex_mem_mem_to_reg;
 wire ex_mem_branch;
 
+wire [31:0] mem_wb_memory_data;
+wire [31:0] mem_wb_alu_result;
+
+wire [4:0] mem_wb_rd;
+
+wire mem_wb_reg_write;
+wire mem_wb_mem_to_reg;
+
 assign branch_target =pc_out + immediate;
 
 assign branch_taken = branch & zero;
@@ -84,10 +92,10 @@ assign next_pc =
        (branch_taken) ?branch_target :(pc_out + 32'd4);
 
 // select second ALU operand
-assign alu_input_b =(alu_src) ? immediate : read_data2;
+assign id_ex_alu_input_b =(id_ex_alu_src) ? id_ex_immediate : id_ex_read_data2;
 
 // select data to write back
-assign write_back_data = (mem_to_reg) ? memory_data : alu_result;
+assign write_back_data = (mem_wb_mem_to_reg) ? mem_wb_memory_data : mem_wb_alu_result;
 
 
 // Program Counter
@@ -143,10 +151,10 @@ control_unit ctrl(
 // Register file
 register_file rf(
     .clk(clk),
-    .reg_write(reg_write),
+    .reg_write(mem_wb_reg_write),
     .rs1(rs1),
     .rs2(rs2),
-    .rd(rd),
+    .rd(mem_wb_rd),
     .write_data(write_back_data),
     .read_data1(read_data1),
     .read_data2(read_data2)
@@ -154,17 +162,18 @@ register_file rf(
 
 // Immediate generator
 sign_extend se(
-    .instruction(instruction),
+    .instruction(if_id_instruction),
     .immediate(immediate)
 );
 
 // ALU control
 alu_control alu_ctrl(
-    .alu_op(alu_op),
-    .funct3(funct3),
-    .funct7(funct7),
+    .alu_op(id_ex_alu_op),
+    .funct3(id_ex_funct3),
+    .funct7(id_ex_funct7),
     .alu_sel(alu_sel)
 );
+
 id_ex id_ex_reg(
 
     .clk(clk),
@@ -220,8 +229,8 @@ id_ex id_ex_reg(
 
 // Execute stage
 alu alu_inst(
-    .A(read_data1),
-    .B(alu_input_b),
+    .A(id_ex_read_data1),
+    .B(id_ex_alu_input_b),
     .sel(alu_sel),
     .Y(alu_result),
     .carry(carry),
@@ -260,11 +269,34 @@ ex_mem ex_mem_reg(
 // Data memory
 data_memory dmem(
     .clk(clk),
-    .mem_read(mem_read),
-    .mem_write(mem_write),
-    .address(alu_result),
-    .write_data(read_data2),
+    .mem_read(ex_mem_mem_read),
+    .mem_write(ex_mem_mem_write),
+    .address(ex_mem_alu_result),
+    .write_data(ex_mem_read_data2),
     .read_data(memory_data)
+);
+
+mem_wb mem_wb_reg(
+
+    .clk(clk),
+    .reset(reset),
+
+    .memory_data_in(memory_data),
+    .alu_result_in(ex_mem_alu_result),
+
+    .rd_in(ex_mem_rd),
+
+    .reg_write_in(ex_mem_reg_write),
+    .mem_to_reg_in(ex_mem_mem_to_reg),
+
+    .memory_data_out(mem_wb_memory_data),
+    .alu_result_out(mem_wb_alu_result),
+
+    .rd_out(mem_wb_rd),
+
+    .reg_write_out(mem_wb_reg_write),
+    .mem_to_reg_out(mem_wb_mem_to_reg)
+
 );
 
 endmodule
