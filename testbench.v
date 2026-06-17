@@ -34,12 +34,14 @@ initial begin
 end
 
 initial begin
+
     $monitor(
-        "Time=%0t ALU=%d EXMEM=%d MEMWB=%d",
+        "Time=%0t x1=%d x2=%d x3=%d",
         $time,
-        dut.alu_result,
-        dut.ex_mem_alu_result,
-        dut.mem_wb_alu_result
+        dut.rf.registers[1],
+        dut.rf.registers[2],
+        dut.rf.registers[3]
     );
+
 end
 endmodule

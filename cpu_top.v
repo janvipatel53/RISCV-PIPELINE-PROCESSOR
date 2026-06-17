@@ -84,6 +84,12 @@ wire [4:0] mem_wb_rd;
 wire mem_wb_reg_write;
 wire mem_wb_mem_to_reg;
 
+wire [1:0] forward_a;
+wire [1:0] forward_b;
+
+wire [31:0] alu_input_a;
+wire [31:0] alu_input_b_forwarded;
+
 assign branch_target =pc_out + immediate;
 
 assign branch_taken = branch & zero;
@@ -92,11 +98,15 @@ assign next_pc =
        (branch_taken) ?branch_target :(pc_out + 32'd4);
 
 // select second ALU operand
-assign id_ex_alu_input_b =(id_ex_alu_src) ? id_ex_immediate : id_ex_read_data2;
+assign id_ex_alu_input_b =(id_ex_alu_src) ? id_ex_immediate :   alu_input_b_forwarded;
 
 // select data to write back
 assign write_back_data = (mem_wb_mem_to_reg) ? mem_wb_memory_data : mem_wb_alu_result;
 
+//forwarding muxes
+assign alu_input_a =(forward_a == 2'b10) ? ex_mem_alu_result :(forward_a == 2'b01) ? write_back_data : id_ex_read_data1;
+
+assign alu_input_b_forwarded =(forward_b == 2'b10) ? ex_mem_alu_result :(forward_b == 2'b01) ? write_back_data : id_ex_read_data2;
 
 // Program Counter
 pc pc_inst(
@@ -229,7 +239,7 @@ id_ex id_ex_reg(
 
 // Execute stage
 alu alu_inst(
-    .A(id_ex_read_data1),
+    .A(alu_input_a),
     .B(id_ex_alu_input_b),
     .sel(alu_sel),
     .Y(alu_result),
@@ -296,6 +306,22 @@ mem_wb mem_wb_reg(
 
     .reg_write_out(mem_wb_reg_write),
     .mem_to_reg_out(mem_wb_mem_to_reg)
+
+);
+
+forwarding_unit fu(
+
+    .rs1(id_ex_rs1),
+    .rs2(id_ex_rs2),
+
+    .ex_mem_rd(ex_mem_rd),
+    .mem_wb_rd(mem_wb_rd),
+
+    .ex_mem_reg_write(ex_mem_reg_write),
+    .mem_wb_reg_write(mem_wb_reg_write),
+
+    .forward_a(forward_a),
+    .forward_b(forward_b)
 
 );
 
