@@ -39,6 +39,14 @@ Supporting modules:
 - Hazard Detection Unit
 - Control Unit
 ---
+## Verification
+
+The processor was verified using:
+- Arithmetic instruction tests
+- Forwarding tests
+- Load-use hazard tests
+- Memory access tests
+---
 
 ## Features Implemented
 
@@ -148,3 +156,14 @@ testbench.v
 * Branch prediction
 * Cache memory implementation
 * FPGA deployment
+
+---
+## Simulation Results
+
+### Terminal Output
+
+![Simulation Output](docs/simulation_output.png)
+
+### Pipeline Waveform
+
+![Waveform](docs/simulation_waveform.png)

@@ -30,7 +30,7 @@ end
 // waveform dump
 initial begin
     $dumpfile("cpu.vcd");
-    $dumpvars(0, tb_cpu);
+    $dumpvars(0, dut);
 end
 initial begin
 
