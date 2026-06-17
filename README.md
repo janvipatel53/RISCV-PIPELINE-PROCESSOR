@@ -28,6 +28,17 @@ Pipeline registers used:
 * MEM/WB
 
 ---
+## Architecture
+
+The processor consists of:
+
+Instruction Memory → IF/ID → Decode → ID/EX → Execute → EX/MEM → Memory → MEM/WB → Write Back
+
+Supporting modules:
+- Forwarding Unit
+- Hazard Detection Unit
+- Control Unit
+---
 
 ## Features Implemented
 
