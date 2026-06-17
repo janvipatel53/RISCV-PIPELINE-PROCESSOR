@@ -31,7 +31,7 @@ module data_memory(
 
     end
     initial begin
-    memory[0] = 10;
+    memory[0] = 0;
 end
 
 endmodule

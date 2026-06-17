@@ -97,6 +97,7 @@ wire [1:0] forward_b;
 
 wire [31:0] alu_input_a;
 wire [31:0] alu_input_b_forwarded;
+wire [31:0] store_data_forwarded;
 
 wire pc_write;
 wire if_id_write;
@@ -141,6 +142,21 @@ assign alu_input_a =(forward_a == 2'b10) ? ex_mem_alu_result :(forward_a == 2'b0
 
 assign alu_input_b_forwarded =(forward_b == 2'b10) ? ex_mem_alu_result :(forward_b == 2'b01) ? write_back_data : id_ex_read_data2;
 
+assign store_data_forwarded =
+
+    (ex_mem_reg_write &&
+     (ex_mem_rd != 0) &&
+     (ex_mem_rd == id_ex_rs2))
+
+    ? ex_mem_alu_result :
+
+    (mem_wb_reg_write &&
+     (mem_wb_rd != 0) &&
+     (mem_wb_rd == id_ex_rs2))
+
+    ? write_back_data :
+
+    id_ex_read_data2;
 // Program Counter
 pc pc_inst(
     .clk(clk),
@@ -288,7 +304,7 @@ ex_mem ex_mem_reg(
     .reset(reset),
 
     .alu_result_in(alu_result),
-    .read_data2_in(id_ex_read_data2),
+    .read_data2_in(store_data_forwarded),
 
     .rd_in(id_ex_rd),
 

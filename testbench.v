@@ -32,17 +32,16 @@ initial begin
     $dumpfile("cpu.vcd");
     $dumpvars(0, tb_cpu);
 end
-
 initial begin
 
     $monitor(
-        "Time=%0t PC=%h x1=%d x2=%d pc_write=%b if_id_write=%b",
+        "Time=%0t x1=%d x2=%d x3=%d x4=%d MEM0=%d",
         $time,
-        dut.pc_out,
         dut.rf.registers[1],
         dut.rf.registers[2],
-        dut.pc_write,
-        dut.if_id_write
+        dut.rf.registers[3],
+        dut.rf.registers[4],
+        dut.dmem.memory[0]
     );
 
 end
